@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <title>I2T</title>
+
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+
+    <style>
+    .invisible {
+      visibility:hidden;
+    }
+    </style>
+
+</head>
+<body>
+
+  <div class="card border-primary mb-3 container-sm text-center fs-2" >
+
+    <div class="card-header">Image To Text Converter</div>
+
+    <div class="card-body">
+
+      <form id="stt_form" enctype="multipart/form-data">
+
+        <div class="mb-3">
+
+          <label for="sendfile" class="form-label">
+           <i class="bi bi-plus-circle"></i> Select/drag & drop 
+          </label>      
+
+          <input
+            type="file" 
+            name="sendfile"
+            class="form-control"
+            accept= ".png, .jpeg, .tiff, .jpg , .gif, .webp, .bmp, .pnm "
+            required
+          />
+
+
+          <small class="form-text text-muted"> 
+              <span class="badge bg-primary"> <i class="bi bi-file-earmark-image"></i> .png    </span>
+              <span class="badge bg-light">   <i class="bi bi-file-earmark-image"></i> .jpeg   </span> 
+              <span class="badge bg-success"> <i class="bi bi-file-earmark-image"></i> .jpg    </span>
+              <span class="badge bg-danger">  <i class="bi bi-file-earmark-image"></i> .tiff    </span>
+              <span class="badge bg-warning"> <i class="bi bi-file-earmark-image"></i> .webp    </span>
+              <span class="badge bg-info">    <i class="bi bi-file-earmark-image"></i> .bmp  </span>
+              <span class="badge bg-dark">    <i class="bi bi-file-earmark-image"></i> .pnm   </span>
+          </small>
+
+
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg fs-1 mb-3">
+          <i class="bi bi-image-fill"></i><i class="bi bi-arrow-right-short"></i><i class="bi bi-file-text"></i>
+        </button>
+
+        <div id="bar_container" class="invisible">
+          <div class="progress mb-2" >
+            <div id="bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- <div class="d-grid gap-2"> -->
+            <span id="transcript" class="invisible">
+          </span>
+        <!-- </div> -->
+
+      </form>
+    </div>
+  </div>
+
+
+<script>
+  
+  const stt_form = document.getElementById("stt_form");
+  const bar = document.getElementById("bar");
+  const bar_container = document.getElementById("bar_container");
+  const transc = document.getElementById("transcript")
+
+  function sendFile(e) {
+  e.preventDefault();
+  try {
+     
+
+    // Backend expects to receive a FormData
+    // with a key named 'sendfile'
+    // and an image file as the value.
+    const item = e.target.sendfile.files[0];
+    const fd = new FormData();
+    fd.append('sendfile', item);
+
+    // The response from the backend is a JSON with a single string.
+    const req = new XMLHttpRequest();
+    
+    // We monitor the upload property at two stages
+    // 1- At 'loadstart', to perform some CSS-setup...
+    req.upload.addEventListener('loadstart', function (e) {
+        bar_container.classList.toggle("invisible")
+        transc.classList.add("invisible")
+      })
+      
+    // 2- At 'progress', to expand the progress bar 
+    // accordingly (capped at 80%). Keep going to see why 
+    req.upload.addEventListener('progress', function (e) {
+      if (e.lengthComputable) {
+        const percentComplete = (e.loaded / e.total) * 80;
+        bar.style.width = percentComplete + "%";
+      }
+    });
+
+    // Then, we monitor the request itself.
+    // When it reaches the 'load' stage, it means
+    // the server has already responded.
+    // 1- The progress bar is set to reach 100%
+    // 2- The download link is made visible. We set its 
+    //    href to a URL made out of the req.response.
+    //    The downloaded file is named after the original one
+    // 3- Some CSS-cleanup takes place one second after
+    //    operation is finished.  
+    req.addEventListener('load', function () {
+      bar.style.width = 100 + "%";
+      console.log(req.response);
+      console.log(typeof req.response);
+      text = JSON.parse(req.response).output
+
+      transc.classList.remove("invisible");
+      <!-- // link.href = window.URL.createObjectURL(req.response); -->
+      transc.textContent=text;
+
+      const bye = setTimeout(()=>{
+        bar_container.classList.toggle("invisible");
+        bar.style.width = 0 + "%";
+
+        clearTimeout(bye)
+      }, 1000)
+    });
+
+    req.open("POST", 'http://localhost:3001/itt');
+    req.send(fd);
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+  stt_form.addEventListener("submit", sendFile)
+
+</script>
+
+</body>
+</html>
+
