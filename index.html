@@ -21,17 +21,21 @@
 </head>
 <body>
 
-  <div class="card border-primary mb-3 container-sm text-center fs-2" >
+    <div class="container">
+      <div class="row">
+        <div                              class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2"></div>
+<div class="card border-primary mb-3 text-center col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
 
     <div class="card-header">Image To Text Converter</div>
 
 
-      <div class="mb-0">
-        <textarea id="imageContainer" placeholder="   Input from Clipboard"></textarea>
-      </div>
 
 
     <div class="card-body">
+
+      <div class="mb-0">
+        <textarea id="imageContainer" placeholder="   Input from Clipboard"></textarea>
+      </div>
 
       <form id="stt_form" enctype="multipart/form-data">
 
@@ -63,7 +67,7 @@
 
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg fs-1 mb-3">
+        <button type="submit" class="btn btn-primary btn-lg mb-3">
           <i class="bi bi-image-fill"></i><i class="bi bi-arrow-right-short"></i><i class="bi bi-file-text"></i>
         </button>
 
@@ -74,14 +78,48 @@
         </div>
 
         <!-- <div class="d-grid gap-2"> -->
-            <span id="transcript" class="invisible">
-          </span>
         <!-- </div> -->
 
 
       </form>
     </div>
   </div>
+    </div>
+   <div class="row">
+
+<ul class="nav nav-tabs " role="tablist">
+  <li class="nav-item w-50" role="presentation">
+    <a class="nav-link active" data-bs-toggle="tab" href="#home" aria-selected="false" role="tab" tabindex="-1">Home</a>
+  </li>
+  <li class="nav-item w-50" role="presentation">
+    <a class="nav-link" data-bs-toggle="tab" href="#profile" aria-selected="true" role="tab">Profile</a>
+  </li>
+</ul>
+
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade active show" id="home" role="tabpanel">
+        <span id="transcript" class="invisible"></span>
+  </div>
+  <div class="tab-pane fade" id="profile" role="tabpanel">
+        <code><pre id="verbatim" class="mb-3 p-2"></pre></code>
+  </div>
+  
+  
+</div>
+    </div> </div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
 
 
 <script>
@@ -90,6 +128,7 @@
   const bar = document.getElementById("bar");
   const bar_container = document.getElementById("bar_container");
   const transc = document.getElementById("transcript")
+  const verbat = document.getElementById("verbatim")
 
   function sendFile(e) {
   e.preventDefault();
@@ -140,6 +179,7 @@
       transc.classList.remove("invisible");
       <!-- // link.href = window.URL.createObjectURL(req.response); -->
       transc.textContent=text;
+      verbat.textContent=text;
 
       const bye = setTimeout(()=>{
         bar_container.classList.toggle("invisible");
@@ -207,6 +247,7 @@ async function sendfromclipboard(e){
 
         transc.classList.remove("invisible");
         transc.textContent=text;
+        verbat.textContent=text;
 
         const bye = setTimeout(()=>{
           bar_container.classList.toggle("invisible");
