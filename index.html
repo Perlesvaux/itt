@@ -123,6 +123,10 @@
 
 
 <script>
+  let BASEURL = 'https://i2t-8ive.onrender.com';
+  const HOSTNAME = window.location.hostname
+  if (HOSTNAME == '' || HOSTNAME == 'localhost') BASEURL = 'http://localhost:3001'
+
   
   const stt_form = document.getElementById("stt_form");
   const bar = document.getElementById("bar");
@@ -189,7 +193,7 @@
       }, 1000)
     });
 
-    req.open("POST", 'http://localhost:3001/itt');
+      req.open("POST", `${BASEURL}/itt`);
     req.send(fd);
 
   } catch (err) {
