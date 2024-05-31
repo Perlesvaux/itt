@@ -261,7 +261,7 @@ async function sendfromclipboard(e){
         }, 1000)
       });
 
-      req.open("POST", 'http://localhost:3001/itt');
+      req.open("POST", `${BASEURL}/itt`);
       req.send(fd);
 
 
